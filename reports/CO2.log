@@ -1,19 +1,19 @@
 Traceback (most recent call last):
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+  File "C:\Users\kathr\anaconda3\lib\site-packages\jupyter_cache\executors\utils.py", line 51, in single_nb_execution
     executenb(
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/client.py", line 1112, in execute
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\client.py", line 1204, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/util.py", line 74, in wrapped
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\util.py", line 84, in wrapped
     return just_run(coro(*args, **kwargs))
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/util.py", line 53, in just_run
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\util.py", line 62, in just_run
     return loop.run_until_complete(coro)
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+  File "C:\Users\kathr\anaconda3\lib\asyncio\base_events.py", line 616, in run_until_complete
     return future.result()
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/client.py", line 553, in async_execute
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\client.py", line 663, in async_execute
     await self.async_execute_cell(
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/client.py", line 857, in async_execute_cell
-    self._check_raise_for_error(cell, exec_reply)
-  File "/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/nbclient/client.py", line 760, in _check_raise_for_error
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "C:\Users\kathr\anaconda3\lib\site-packages\nbclient\client.py", line 862, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -33,15 +33,15 @@ import numpy as np
 pio.renderers.default = 'notebook'
 ------------------
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-[0;32m/var/folders/wv/j_lqm8yn4ndb1hvhthjcrb540000gn/T/ipykernel_16347/23591164.py[0m in [0;36m<module>[0;34m[0m
-[1;32m      4[0m [0;32mfrom[0m [0mmatplotlib[0m[0;34m.[0m[0mpyplot[0m [0;32mimport[0m [0mfigure[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      5[0m [0;32mimport[0m [0mseaborn[0m [0;32mas[0m [0msns[0m[0;34m[0m[0;34m[0m[0m
-[0;32m----> 6[0;31m [0;32mimport[0m [0mpycountry_convert[0m [0;32mas[0m [0mpc[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      7[0m [0;32mimport[0m [0mplotly[0m[0;34m.[0m[0mexpress[0m [0;32mas[0m [0mpx[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      8[0m [0;32mimport[0m [0mplotly[0m[0;34m.[0m[0moffline[0m [0;32mas[0m [0mpyo[0m[0;34m[0m[0;34m[0m[0m
+[1;31m---------------------------------------------------------------------------[0m
+[1;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Input [1;32mIn [1][0m, in [0;36m<cell line: 6>[1;34m()[0m
+[0;32m      4[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mimport[39;00m figure
+[0;32m      5[0m [38;5;28;01mimport[39;00m [38;5;21;01mseaborn[39;00m [38;5;28;01mas[39;00m [38;5;21;01msns[39;00m
+[1;32m----> 6[0m [38;5;28;01mimport[39;00m [38;5;21;01mpycountry_convert[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpc[39;00m
+[0;32m      7[0m [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mexpress[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpx[39;00m
+[0;32m      8[0m [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01moffline[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpyo[39;00m
 
-[0;31mModuleNotFoundError[0m: No module named 'pycountry_convert'
+[1;31mModuleNotFoundError[0m: No module named 'pycountry_convert'
 ModuleNotFoundError: No module named 'pycountry_convert'
 

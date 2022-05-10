@@ -17,33 +17,128 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-## filter out non country rows
-wealth_18 = wealth[(wealth['year'] == 2018) & (wealth['continent'].isin(['Asia','Europe','Africa','North America','Oceania','South America']))]
-## calculate gdp per capita
-wealth_18['gdp_per_capita'] = wealth_18['gdp']/wealth_18['population']
-wealth_18['share_global_co2'] = wealth_18['share_global_co2']
-## remove rows with missing values
-wealth_18 = wealth_18[(wealth_18['gdp']!=0) & (wealth_18['share_global_co2']!=0)]
+# Basic libraries
 
-fig = px.scatter(wealth_18, x="gdp_per_capita", y="co2_per_capita",
-	         size="population", color = 'continent',
-                 hover_name="country", log_x=True, log_y=True, size_max=60,trendline='ols',trendline_scope="overall", title = 'CO2 per capita vs GDP per capita')
-fig.update_layout(
-    xaxis_title="GDP per capita ($)",
-    yaxis_title="CO2 per capita (t)"
-)
-fig.show()
+import numpy as np
+import pandas as pd
+import json
+import matplotlib.pyplot as plt
+import seaborn as sns
+import math
+import time
+import itertools
+
+import warnings
+warnings.filterwarnings('ignore')
+
+# helper 
+
+import pycountry_convert as pc
+
+def country_to_continent(country_code):
+    try:
+        country_alpha2 = pc.country_alpha3_to_country_alpha2(country_code)
+        country_continent_code = pc.country_alpha2_to_continent_code(country_alpha2)
+        country_continent_name = pc.convert_continent_code_to_continent_name(country_continent_code)
+    except: 
+        country_continent_name = country_code
+        
+    return country_continent_name
+
+def countryname_to_continent(country_name):
+    try:
+        country_code = pc.country_name_to_country_alpha2(country_name, cn_name_format="default")
+        country_continent_code = pc.country_alpha2_to_continent_code(country_code)
+        country_continent_name = pc.convert_continent_code_to_continent_name(country_continent_code)
+    except: 
+        country_continent_name = country_name
+        
+    return country_continent_name
+    
+# Display libraries
+
+from IPython.display import IFrame, display
+from IPython.core.display import display as disp, HTML
+from ipywidgets import widgets, interact, interactive, fixed, interact_manual
+
+from plotly import __version__
+import plotly.express as px
+import plotly.offline as pyo
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+pio.renderers.default = 'notebook'
+
+df_co2 = pd.read_csv('data/owid-co2-data.csv',sep = ',',encoding = 'unicode_escape')
+df_co2['continent'] = df_co2['iso_code'].apply(lambda x: country_to_continent(x))
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mNameError[0m                                 Traceback (most recent call last)
-[0;32m/var/folders/wv/j_lqm8yn4ndb1hvhthjcrb540000gn/T/ipykernel_20548/3411770185.py[0m in [0;36m<module>[0;34m[0m
-[1;32m      1[0m [0;31m## filter out non country rows[0m[0;34m[0m[0;34m[0m[0m
-[0;32m----> 2[0;31m [0mwealth_18[0m [0;34m=[0m [0mwealth[0m[0;34m[[0m[0;34m([0m[0mwealth[0m[0;34m[[0m[0;34m'year'[0m[0;34m][0m [0;34m==[0m [0;36m2018[0m[0;34m)[0m [0;34m&[0m [0;34m([0m[0mwealth[0m[0;34m[[0m[0;34m'continent'[0m[0;34m][0m[0;34m.[0m[0misin[0m[0;34m([0m[0;34m[[0m[0;34m'Asia'[0m[0;34m,[0m[0;34m'Europe'[0m[0;34m,[0m[0;34m'Africa'[0m[0;34m,[0m[0;34m'North America'[0m[0;34m,[0m[0;34m'Oceania'[0m[0;34m,[0m[0;34m'South America'[0m[0;34m][0m[0;34m)[0m[0;34m)[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      3[0m [0;31m## calculate gdp per capita[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m [0mwealth_18[0m[0;34m[[0m[0;34m'gdp_per_capita'[0m[0;34m][0m [0;34m=[0m [0mwealth_18[0m[0;34m[[0m[0;34m'gdp'[0m[0;34m][0m[0;34m/[0m[0mwealth_18[0m[0;34m[[0m[0;34m'population'[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m      5[0m [0mwealth_18[0m[0;34m[[0m[0;34m'share_global_co2'[0m[0;34m][0m [0;34m=[0m [0mwealth_18[0m[0;34m[[0m[0;34m'share_global_co2'[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
+[0;32m/var/folders/wv/j_lqm8yn4ndb1hvhthjcrb540000gn/T/ipykernel_31786/2043613242.py[0m in [0;36m<module>[0;34m[0m
+[1;32m     53[0m [0mpio[0m[0;34m.[0m[0mrenderers[0m[0;34m.[0m[0mdefault[0m [0;34m=[0m [0;34m'notebook'[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     54[0m [0;34m[0m[0m
+[0;32m---> 55[0;31m [0mdf_co2[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m'data/owid-co2-data.csv'[0m[0;34m,[0m[0msep[0m [0;34m=[0m [0;34m','[0m[0;34m,[0m[0mencoding[0m [0;34m=[0m [0;34m'unicode_escape'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     56[0m [0mdf_co2[0m[0;34m[[0m[0;34m'continent'[0m[0;34m][0m [0;34m=[0m [0mdf_co2[0m[0;34m[[0m[0;34m'iso_code'[0m[0;34m][0m[0;34m.[0m[0mapply[0m[0;34m([0m[0;32mlambda[0m [0mx[0m[0;34m:[0m [0mcountry_to_continent[0m[0;34m([0m[0mx[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
-[0;31mNameError[0m: name 'wealth' is not defined
-NameError: name 'wealth' is not defined
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/util/_decorators.py[0m in [0;36mwrapper[0;34m(*args, **kwargs)[0m
+[1;32m    309[0m                     [0mstacklevel[0m[0;34m=[0m[0mstacklevel[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    310[0m                 )
+[0;32m--> 311[0;31m             [0;32mreturn[0m [0mfunc[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    312[0m [0;34m[0m[0m
+[1;32m    313[0m         [0;32mreturn[0m [0mwrapper[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/readers.py[0m in [0;36mread_csv[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, error_bad_lines, warn_bad_lines, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options)[0m
+[1;32m    584[0m     [0mkwds[0m[0;34m.[0m[0mupdate[0m[0;34m([0m[0mkwds_defaults[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    585[0m [0;34m[0m[0m
+[0;32m--> 586[0;31m     [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    587[0m [0;34m[0m[0m
+[1;32m    588[0m [0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/readers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
+[1;32m    480[0m [0;34m[0m[0m
+[1;32m    481[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 482[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    483[0m [0;34m[0m[0m
+[1;32m    484[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/readers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
+[1;32m    809[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[1;32m    810[0m [0;34m[0m[0m
+[0;32m--> 811[0;31m         [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    812[0m [0;34m[0m[0m
+[1;32m    813[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/readers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
+[1;32m   1038[0m             )
+[1;32m   1039[0m         [0;31m# error: Too many arguments for "ParserBase"[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1040[0;31m         [0;32mreturn[0m [0mmapping[0m[0;34m[[0m[0mengine[0m[0;34m][0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m  [0;31m# type: ignore[call-arg][0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1041[0m [0;34m[0m[0m
+[1;32m   1042[0m     [0;32mdef[0m [0m_failover_to_python[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/c_parser_wrapper.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
+[1;32m     49[0m [0;34m[0m[0m
+[1;32m     50[0m         [0;31m# open handles[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 51[0;31m         [0mself[0m[0;34m.[0m[0m_open_handles[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     52[0m         [0;32massert[0m [0mself[0m[0;34m.[0m[0mhandles[0m [0;32mis[0m [0;32mnot[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     53[0m [0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/parsers/base_parser.py[0m in [0;36m_open_handles[0;34m(self, src, kwds)[0m
+[1;32m    220[0m         [0mLet[0m [0mthe[0m [0mreaders[0m [0mopen[0m [0mIOHandles[0m [0mafter[0m [0mthey[0m [0mare[0m [0mdone[0m [0;32mwith[0m [0mtheir[0m [0mpotential[0m [0mraises[0m[0;34m.[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    221[0m         """
+[0;32m--> 222[0;31m         self.handles = get_handle(
+[0m[1;32m    223[0m             [0msrc[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    224[0m             [0;34m"r"[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/opt/homebrew/Caskroom/miniforge/base/envs/cforge_env/lib/python3.9/site-packages/pandas/io/common.py[0m in [0;36mget_handle[0;34m(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)[0m
+[1;32m    699[0m         [0;32mif[0m [0mioargs[0m[0;34m.[0m[0mencoding[0m [0;32mand[0m [0;34m"b"[0m [0;32mnot[0m [0;32min[0m [0mioargs[0m[0;34m.[0m[0mmode[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    700[0m             [0;31m# Encoding[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 701[0;31m             handle = open(
+[0m[1;32m    702[0m                 [0mhandle[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    703[0m                 [0mioargs[0m[0;34m.[0m[0mmode[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'data/owid-co2-data.csv'
+FileNotFoundError: [Errno 2] No such file or directory: 'data/owid-co2-data.csv'
 
